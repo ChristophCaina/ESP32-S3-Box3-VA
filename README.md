@@ -13,7 +13,7 @@ Diese Firmware verwandelt die S3-Box-3 in einen autarken, lokalen und zuverläss
 
 ### 2\. Erweiterte Hardware-Anforderungen (Wichtig\!)
 
-Die folgenden Zusatzfunktionen dieser Konfiguration setzen voraus, dass das optionale **SENSOR DOCK** (die Basisplatine, die der Box beiliegt) angeschlossen ist, da es den **AT581X-Radar-Sensor** und die Anschlüsse für den **AHT20-Sensor** bereitstellt:
+Die folgenden Funktionen **setzen das optionale SENSOR DOCK voraus**, da sie die dort verbauten Komponenten nutzen:
 
   * **Radar-Präsenzerkennung** (`at581x`)
   * **Raumklima-Überwachung** (`aht10` / AHT20)
@@ -40,14 +40,16 @@ Fügen Sie die YAML-Datei in Ihr ESPHome Dashboard ein und flashen Sie die Firmw
 
 ## ⚙️ Detailierte Funktionsübersicht und Erweiterungen
 
-Die Konfiguration baut auf der offiziellen Vorlage auf und erweitert sie um Messungen und Steuerungslogik.
+Die Konfiguration baut auf der offiziellen Vorlage auf und erweitert sie um essenzielle System- und Messdaten.
 
-| Komponente | Beschreibung | Anpassungen |
+| Komponente | Sensor/Entität | Beschreibung |
 | :--- | :--- | :--- |
-| **Präsenzerkennung** | Erfasst Anwesenheit über den integrierten **AT581X-Radar-Sensor des Docks** (`GPIO21`). | **`number.presence_duration`**: Steuert die Nachlaufzeit (`delayed_off`) des Präsenzsensors, bevor Abwesenheit gemeldet wird. |
-| **Mute-Logik** | Schaltet das Mikrofon (`switch.mute`) automatisch **ON** und die Beleuchtung **OFF**, wenn keine Anwesenheit erkannt wird (Abwesenheits-Mute). | **`switch.mute_when_absent`**: Template-Schalter zur Deaktivierung dieser Automatisierung über Home Assistant. |
-| **Raumklima (AHT20)** | Implementiert den AHT20-Temperatur- und Feuchtigkeitssensor (über I²C-Bus B). | **`offset: -4.24`**: Statische Kalibrierung von **$-4.24 \text{ °C}$** zur Korrektur der Board-Erwärmung. |
-| **Batterieanzeige** | Misst den Ladezustand über ADC (`GPIO10`). | **`sensor.battery_voltage` / `sensor.battery_percent`**: Zeigt Spannung und Ladezustand des internen Akkus an. |
+| **System/Netzwerk** | **WiFi Signal**, **Uptime**, **WiFi SSID/BSSID**, **IP Address** | Diese Sensoren sind direkt auf der Hauptplatine implementiert und **funktionieren ohne das SENSOR DOCK**. Sie dienen der Überwachung der Netzwerkstabilität und des Gerätezustands. |
+| **Benutzer-Eingabe** | **Home Button** (`gt911`) | Ein Touch-Flächensensor, der als programmierbarer "Home"- oder Zurück-Button auf dem Display dient. |
+| **Präsenzerkennung** | **`binary_sensor.presence_detect`** | Erfasst Anwesenheit über den **AT581X-Radar-Sensor des Docks**. Steuert die Nachlaufzeit (`delayed_off`). |
+| **Mute-Logik** | **`switch.mute_when_absent`** | Automatisches Stummschalten des Mikrofons bei Abwesenheit zum Schutz der Privatsphäre. |
+| **Raumklima (AHT20)** | **`sensor.temperature`** / **`sensor.humidity`** | Temperatur- und Feuchtigkeitsmessung. Enthält eine **statische Kalibrierung** ($\mathbf{offset: -4.24 \text{ °C}}$) zur Korrektur der internen Erwärmung des Boards. |
+| **Batterieanzeige** | **`sensor.battery_voltage` / `sensor.battery_percent`** | Zeigt Spannung und Ladezustand des internen Akkus an. |
 
 ## 🔗 Externe Abhängigkeiten
 

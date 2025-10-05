@@ -1,0 +1,130 @@
+i2c:
+  - sda: GPIO41
+    scl: GPIO40
+    scan: true
+    sda_pullup_enabled: true
+    scl_pullup_enabled: true
+    frequency: 50kHz
+    id: bus_b
+
+at581x:
+  id: "Radar"
+  i2c_id: bus_a
+
+touchscreen:
+  - platform: gt911
+    i2c_id: bus_a
+    interrupt_pin: GPIO3
+    update_interval: 20ms
+
+switch:
+  - platform: template
+    name: "Mute when absent"
+    id: mute_when_absent
+    icon: mdi:account-right-arrow
+    optimistic: true
+    entity_category: config
+    restore_mode: RESTORE_DEFAULT_OFF
+  
+  - platform: at581x
+    at581x_id: "Radar"
+    name: "Enable Radar"
+
+text_sensor:
+  - platform: version
+    name: "ESPHome Version"
+    hide_timestamp: true
+  - platform: wifi_info
+    ip_address:
+      name: "IP Address"
+    ssid:
+      name: "Wi-Fi SSID"
+    bssid:
+      name: "Wi-Fi BSSID"
+      
+binary_sensor:
+  - platform: gt911
+    name: Home Button
+    index: 0
+    on_press:
+      then:
+        - logger.log: "Home pressed"
+
+  - platform: gpio
+    pin:
+      number: GPIO21
+    name: "Presence detect"
+    disabled_by_default: false
+    publish_initial_state: true
+    device_class: "occupancy"
+    filters:
+      - delayed_off: !lambda return id(radar_delayed_off).state * 1000;
+    on_release:
+      then:
+        - if:
+            condition:
+              switch.is_on: mute_when_absent
+            then:
+              - switch.turn_on: mute
+              - light.turn_off: led
+    on_press:
+      then:
+        - if:
+            condition:
+              switch.is_on: mute_when_absent
+            then:
+              - switch.turn_off: mute
+              - light.turn_on: led  
+
+sensor:
+  - platform: wifi_signal
+    name: "Wifi Signal"
+    update_interval: 60s
+    icon: mdi:wifi
+
+  - platform: uptime
+    name: "Uptime"
+    update_interval: 60s
+    icon: mdi:clock-outline
+
+  - platform: aht10 
+    i2c_id: bus_b
+    variant: AHT20
+    temperature:
+      name: "Temperature"
+      id: s3temp
+            # 💡 KORREKTUR: Offset-Filter
+      filters:
+        # Subtrahiert 2.0 °C vom gemessenen Wert
+        - offset: -4.24 
+    humidity:
+      name: "Humidity"
+    update_interval: 60s
+
+  - platform: adc
+    pin: GPIO10
+    name: "Battery voltage"
+    id: battery_voltage
+    unit_of_measurement: "V"
+    accuracy_decimals: 1
+    device_class: "voltage"
+    entity_category: "diagnostic"
+    disabled_by_default: true
+    update_interval: 30s
+    attenuation: auto
+    filters:
+        - multiply: 4.11
+
+  - platform: copy
+    id: battery_percent
+    source_id: battery_voltage
+    name: "Battery level"
+    unit_of_measurement: "%"
+    accuracy_decimals: 0
+    device_class: "battery"
+    entity_category: "diagnostic"
+    filters:
+      - lambda: return (x - 2.7) / (4.2 - 2.7) * 100;
+      - clamp:
+          min_value: 0
+          max_value: 100

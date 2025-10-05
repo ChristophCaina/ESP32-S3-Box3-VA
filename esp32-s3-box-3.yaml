@@ -93,10 +93,6 @@ wifi:
     - script.execute: draw_display
   on_disconnect:
     - script.execute: draw_display
-  manual_ip:
-    static_ip: 192.168.52.24
-    gateway: 192.168.52.1
-    subnet: 255.255.255.1
 
 captive_portal:
 

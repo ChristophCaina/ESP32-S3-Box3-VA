@@ -1,25 +1,21 @@
 substitutions:
-  devicename: esp32-s3-box-3-5acd3c
-  device_friendlyname: ESP32 S3 Box 3
-  
-  # illustrations
-  loading_illustration_file: android/loading.png
-  idle_illustration_file: android/sleeping.png
-  listening_illustration_file: android/happy.png
-  thinking_illustration_file: android/smile_happy.png
-  replying_illustration_file: android/happy2.png
-  error_illustration_file: android/sad_tear.png
-  timer_finished_illustration_file: android/thinking.png
+  name: esp32-s3-box-3
+  friendly_name: ESP32 S3 Box 3
+  loading_illustration_file: https://github.com/esphome/wake-word-voice-assistants/raw/main/casita/loading_320_240.png
+  idle_illustration_file: https://github.com/esphome/wake-word-voice-assistants/raw/main/casita/idle_320_240.png
+  listening_illustration_file: https://github.com/esphome/wake-word-voice-assistants/raw/main/casita/listening_320_240.png
+  thinking_illustration_file: https://github.com/esphome/wake-word-voice-assistants/raw/main/casita/thinking_320_240.png
+  replying_illustration_file: https://github.com/esphome/wake-word-voice-assistants/raw/main/casita/replying_320_240.png
+  error_illustration_file: https://github.com/esphome/wake-word-voice-assistants/raw/main/casita/error_320_240.png
+  timer_finished_illustration_file: https://github.com/esphome/wake-word-voice-assistants/raw/main/casita/timer_finished_320_240.png
 
-  # background colors
-  loading_illustration_background_color: 'ffffff'
-  idle_illustration_background_color: 'ffffff'
-  listening_illustration_background_color: 'ffffff'
-  thinking_illustration_background_color: 'ffffff'
-  replying_illustration_background_color: 'ffffff'
-  error_illustration_background_color: 'ffffff'
-  
-  # timings
+  loading_illustration_background_color: "000000"
+  idle_illustration_background_color: "000000"
+  listening_illustration_background_color: "FFFFFF"
+  thinking_illustration_background_color: "FFFFFF"
+  replying_illustration_background_color: "FFFFFF"
+  error_illustration_background_color: "000000"
+
   voice_assist_idle_phase_id: "1"
   voice_assist_listening_phase_id: "2"
   voice_assist_thinking_phase_id: "3"
@@ -39,8 +35,8 @@ substitutions:
   font_family: Figtree
 
 esphome:
-  name: ${devicename}
-  friendly_name: ${device_friendlyname}
+  name: ${name}
+  friendly_name: ${friendlyname}
   min_version: 2025.5.0
   name_add_mac_suffix: false
   on_boot:
@@ -816,24 +812,24 @@ text_sensor:
           id(text_response).state = (truncated+"...").c_str();
         }
   - platform: version
-    name: "${devicename} - ESPHome Version"
+    name: "ESPHome Version"
     hide_timestamp: true
   - platform: wifi_info
     ip_address:
-      name: "${devicename} - IP Address"
+      name: "IP Address"
     ssid:
-      name: "${devicename} - Wi-Fi SSID"
+      name: "Wi-Fi SSID"
     bssid:
-      name: "${devicename} - Wi-Fi BSSID"
+      name: "Wi-Fi BSSID"
 
 sensor:
   - platform: wifi_signal
-    name: "${devicename} - Wifi Signal"
+    name: "Wifi Signal"
     update_interval: 60s
     icon: mdi:wifi
 
   - platform: uptime
-    name: "${devicename} - Uptime"
+    name: "Uptime"
     update_interval: 60s
     icon: mdi:clock-outline
 
